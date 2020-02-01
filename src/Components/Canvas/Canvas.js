@@ -1,4 +1,5 @@
-import React, {useEffect, useRef} from 'react';
+import React, { useEffect, useRef } from 'react';
+import { getImage } from '../../Utils/drawImage';
 
 const Canvas = () => {
 
@@ -8,7 +9,7 @@ const Canvas = () => {
     const canvas = canvasElement.current;
     const ctx = canvas.getContext('2d');
     ctx.fillStyle = 'green';
-    ctx.fillRect(0, 0, 256, 128);
+    ctx.putImageData(getImage(), 0, 0);
   });
   return (
     <canvas
