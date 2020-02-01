@@ -1,15 +1,19 @@
 const WIDTH = 256;
 const HEIGHT = 128;
 
+
 /**
  * We are going to make a colour pallet in a 32x32x32 3D space. 
  * To represent this, we use a 3d cordinate system wheare RGB axises represnt x, y, z respectively and each vertice represent a unique color.
  * Min value of an axis 0. Max 31
  * Respective color is calculated by multiplying cordinate by , CORDINATE*8 +7. Therefor single increment alogside an axis represents 8 step increase in each color.
  * Lowest possible color value 7. Max 255
+ * 
+ * @param {*} x 
+ * @param {*} y 
+ * @param {*} z 
  */
-
- export const getColorByCordinates = (x, y, z) => {
+ export const getRBGbyCordinates = (x, y, z) => {
   return [x*8+7, y*8+7, z*8+7]
  }
 
