@@ -87,32 +87,34 @@ const drawLake = (imageArr) => {
 }
 
 const artist = (imageArr) => {
-  let colorBuckets = [white, yellow, cyan, green];
+  let skyColorBuckets = [white, yellow,green, white];
+  let mountainColorBuckets = [red, blue, magenta, black];
+  let forestColorBuckets = [...skyColorBuckets, ...mountainColorBuckets]; //we are using remaining colors to draw the forest
 
+  // Draw aurora
   for(let x=0; x<WIDTH; x++) {
     const mountainBoundary = Math.round( Math.abs( 20*Math.sin(x/35)+50 ) );
-    drawAlongYAxisFromTopToBottom(x, 0, mountainBoundary, colorBuckets, imageArr);
+    drawAlongYAxisFromTopToBottom(x, 0, mountainBoundary, skyColorBuckets, imageArr);
   }
 
-  console.log(`ColorBucketArrayLenght ${colorBuckets.length}`);
+  console.log(`ColorBucketArrayLenght ${skyColorBuckets.length}`);
 
-  colorBuckets.push(red, blue, magenta, black)
+  // Draw mountains
   for(let x=0; x<WIDTH; x++) {
     const mountainBoundary = Math.round( Math.abs( 20*Math.sin(x/35)+50 ) );
     const forestBoundary =  Math.round( Math.abs( 20*Math.abs(Math.sin(x/5 + 20))+100 ) )
-    drawAlongYAxisFromTopToBottom(x, mountainBoundary, forestBoundary, colorBuckets, imageArr);
+    drawAlongYAxisFromTopToBottom(x, mountainBoundary, forestBoundary, mountainColorBuckets, imageArr);
   }
 
-  console.log(`ColorBucketArrayLenght ${colorBuckets.length}`);
-  console.log(colorBuckets[100]);
+  console.log(`ColorBucketArrayLenght ${mountainColorBuckets.length}`);
 
-  colorBuckets.push(red, blue, magenta, black)
+  // Draw forest
   for(let x=0; x<WIDTH; x++) {
     const forestBoundary =  Math.round( Math.abs( 20*Math.abs(Math.sin(x/5 + 20))+100 ) )
-    drawAlongYAxisFromTopToBottom(x, forestBoundary, HEIGHT, colorBuckets, imageArr);
+    drawAlongYAxisFromTopToBottom(x, forestBoundary, HEIGHT, forestColorBuckets, imageArr);
   }
 
-  console.log(`ColorBucketArrayLenght ${colorBuckets.length}`);
+  console.log(`ColorBucketArrayLenght ${forestColorBuckets.length}`);
   console.log(`Available colors : black: ${black.currentCordinates}, red: ${red.currentCordinates}, green: ${green.currentCordinates}, blue: ${blue.currentCordinates}, yellow: ${yellow.currentCordinates}, magenta: ${magenta.currentCordinates}, cyan: ${cyan.currentCordinates}, white: ${white.currentCordinates}`);
   console.log(`Painted pixel count : ${paintedPixelCount}`);
   return new ImageData(imageArr, WIDTH, HEIGHT);
