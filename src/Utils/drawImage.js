@@ -87,13 +87,13 @@ const drawLake = (imageArr) => {
 }
 
 const artist = (imageArr) => {
-  let skyColorBuckets = [white, yellow,green, white];
-  let mountainColorBuckets = [red, blue, magenta, black];
+  let skyColorBuckets = [white, yellow, green,red];
+  let mountainColorBuckets = [cyan, blue, magenta, black];
   let forestColorBuckets = [...skyColorBuckets, ...mountainColorBuckets]; //we are using remaining colors to draw the forest
 
   // Draw aurora
   for(let x=0; x<WIDTH; x++) {
-    const mountainBoundary = Math.round( Math.abs( 20*Math.sin(x/35)+50 ) );
+    const mountainBoundary = 64;
     drawAlongYAxisFromTopToBottom(x, 0, mountainBoundary, skyColorBuckets, imageArr);
   }
 
@@ -101,18 +101,18 @@ const artist = (imageArr) => {
 
   // Draw mountains
   for(let x=0; x<WIDTH; x++) {
-    const mountainBoundary = Math.round( Math.abs( 20*Math.sin(x/35)+50 ) );
-    const forestBoundary =  Math.round( Math.abs( 20*Math.abs(Math.sin(x/5 + 20))+100 ) )
+    const mountainBoundary = 64;
+    const forestBoundary =  128;
     drawAlongYAxisFromTopToBottom(x, mountainBoundary, forestBoundary, mountainColorBuckets, imageArr);
   }
 
   console.log(`ColorBucketArrayLenght ${mountainColorBuckets.length}`);
 
   // Draw forest
-  for(let x=0; x<WIDTH; x++) {
-    const forestBoundary =  Math.round( Math.abs( 20*Math.abs(Math.sin(x/5 + 20))+100 ) )
-    drawAlongYAxisFromTopToBottom(x, forestBoundary, HEIGHT, forestColorBuckets, imageArr);
-  }
+  // for(let x=0; x<WIDTH; x++) {
+  //   const forestBoundary =  Math.round( Math.abs( 20*Math.abs(Math.sin(x/5 + 20))+100 ) )
+  //   drawAlongYAxisFromTopToBottom(x, forestBoundary, HEIGHT, forestColorBuckets, imageArr);
+  // }
 
   console.log(`ColorBucketArrayLenght ${forestColorBuckets.length}`);
   console.log(`Available colors : black: ${black.currentCordinates}, red: ${red.currentCordinates}, green: ${green.currentCordinates}, blue: ${blue.currentCordinates}, yellow: ${yellow.currentCordinates}, magenta: ${magenta.currentCordinates}, cyan: ${cyan.currentCordinates}, white: ${white.currentCordinates}`);
