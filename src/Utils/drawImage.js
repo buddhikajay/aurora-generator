@@ -1,6 +1,3 @@
-import { HEIGHT, WIDTH, black, red, green, blue, yellow, magenta, cyan, white} from './constants';
-
-
 /**
  * We are going to make a colour pallet in a 32x32x32 3D space. 
  * To represent this, we use a 3d cordinate system wheare RGB axises represnt x, y, z respectively and each vertice represent a unique color.
@@ -8,7 +5,27 @@ import { HEIGHT, WIDTH, black, red, green, blue, yellow, magenta, cyan, white} f
  * Respective color is calculated by multiplying cordinate by , CORDINATE*8 +7. Therefor single increment alogside an axis represents 8 step increase in each color.
  * Lowest possible color value 7. Max 255
  * 
+ * ### Color Buckets ###
+ * 8 corners of 3d color pallet represents 8 color buckets. So, lets try to draw an image with 8 different colros (color buckets).
+ * For ease of traversal, we can also define the boundaries for each color bucket. These are defined in the constants file
  * 
+ * ## The Image ###
+ * We are going to draw the sky with aurora, mountains and forest with trees.. ha ha
+ * We will be scanning the image from top to bottom, then left to right
+ * In each iteration we will have two boundaries, mountain boundary and forestBoundary
+ * 
+ * Sky will be drawn with colors Yellow, white, red and magenta
+ * Mountain : Blue, Back
+ * Forest: Green, Cyan
+ * 
+ * If we run out of colors, we'll be using available colors
+ */
+
+import { HEIGHT, WIDTH, black, red, green, blue, yellow, magenta, cyan, white} from './constants';
+
+let paintedPixelCount=0;
+/**
+ *
  * @param {*} x 
  * @param {*} y 
  * @param {*} z 
@@ -18,26 +35,9 @@ import { HEIGHT, WIDTH, black, red, green, blue, yellow, magenta, cyan, white} f
  }
 
  /**
-  * 8 corners of 3d color pallet represents 8 color buckets. So, lets try to draw an image with 8 different colros (color buckets).
-  * Pure color points for each colors are as follows
   * 
-  * Black: 0,0,0
-  * Red: 31,0,0
-  * Green: 0,31,0
-  * Blue: 0,0,31
-  * Yellow: 31,31,0
-  * Magenta: 31,0,31
-  * Ceyan: 0,31,31
-  * White: 31,31,31
-  * 
-  * For ease of traversal, we can also define the boundaries for each color bucket. These are defined in the constants file
-  * 
+  * Given the upperbound and the currentindex, this function will return the next available color.
   */
-
-  /**
-   * Given the upperbound and the currentindex, this function will return the next available color.
-   * This function assumes that the initial currentCordinatesArr is initialized to the lower bound
-   */
  export const getNextAvailableColor = (loweboundArr, upperBoundArr, currentCordindatesArr) => {
 
   if(currentCordindatesArr[2]>=upperBoundArr[2]){
@@ -86,33 +86,35 @@ const drawLake = (imageArr) => {
   }
 }
 
-/**
- * We are going to draw the sky, mountains and forest with trees.. ha ha
- * We will be scanning the image from top to bottom, then left to right
- * In each iteration we will have two boundaries, mountain boundary and forestBoundary
- * 
- * Sky will be drawn with colors Yellow, white, red and magenta
- * Mountain : Blue, Back
- * Forest: Green, Cyan
- * 
- * If we run out of colors, we'll be using available colors
- * 
- */
 const artist = (imageArr) => {
-  let skyColors = [white,yellow, cyan, green]
+  let colorBuckets = [white, yellow, cyan, green];
 
   for(let x=0; x<WIDTH; x++) {
     const mountainBoundary = Math.round( Math.abs( 20*Math.sin(x/35)+50 ) );
-    drawAlongYAxisFromTopToBottom(x, 0, mountainBoundary, skyColors, imageArr);
+    drawAlongYAxisFromTopToBottom(x, 0, mountainBoundary, colorBuckets, imageArr);
   }
 
+  console.log(`ColorBucketArrayLenght ${colorBuckets.length}`);
+
+  colorBuckets.push(red, blue, magenta, black)
   for(let x=0; x<WIDTH; x++) {
-
-    skyColors.push(red, blue, magenta, black)
     const mountainBoundary = Math.round( Math.abs( 20*Math.sin(x/35)+50 ) );
-    drawAlongYAxisFromTopToBottom(x, mountainBoundary, HEIGHT, skyColors, imageArr);
+    const forestBoundary =  Math.round( Math.abs( 20*Math.abs(Math.sin(x/5 + 20))+100 ) )
+    drawAlongYAxisFromTopToBottom(x, mountainBoundary, forestBoundary, colorBuckets, imageArr);
   }
-  console.log(`Available colors : red: ${red.currentCordinates}, green: ${green.currentCordinates}`)
+
+  console.log(`ColorBucketArrayLenght ${colorBuckets.length}`);
+  console.log(colorBuckets[100]);
+
+  colorBuckets.push(red, blue, magenta, black)
+  for(let x=0; x<WIDTH; x++) {
+    const forestBoundary =  Math.round( Math.abs( 20*Math.abs(Math.sin(x/5 + 20))+100 ) )
+    drawAlongYAxisFromTopToBottom(x, forestBoundary, HEIGHT, colorBuckets, imageArr);
+  }
+
+  console.log(`ColorBucketArrayLenght ${colorBuckets.length}`);
+  console.log(`Available colors : black: ${black.currentCordinates}, red: ${red.currentCordinates}, green: ${green.currentCordinates}, blue: ${blue.currentCordinates}, yellow: ${yellow.currentCordinates}, magenta: ${magenta.currentCordinates}, cyan: ${cyan.currentCordinates}, white: ${white.currentCordinates}`);
+  console.log(`Painted pixel count : ${paintedPixelCount}`);
   return new ImageData(imageArr, WIDTH, HEIGHT);
 }
 
@@ -130,8 +132,9 @@ const drawAlongYAxisFromTopToBottom = (x, yMin, yMax, colorBucketArray, imageArr
     let {lowerBoundary, upperBoundary, currentCordinates} = colorBucketArray[random];
     let colorCordinates = getNextAvailableColor(lowerBoundary, upperBoundary, currentCordinates);
     
-    // if the color bucket is empty, remote it from the bucket array.
+    // if the color bucket is empty, remove it from the bucket array.
     while(colorCordinates==null) {
+      paintedPixelCount++;
       colorBucketArray.splice(random, 1);
       if(colorBucketArray.length === 0) {
         break;
@@ -159,10 +162,14 @@ const drawAlongYAxisFromTopToBottom = (x, yMin, yMax, colorBucketArray, imageArr
 const paitPixelByColorCordinates = (x,y,redCordinate,greenCordinate,blueCordinate,imageArr) => {
   const pixelIndex = getPixelIndexByCordinates(x,y,WIDTH);
   const [red, green, blue] = getRGBbyCordinates(redCordinate, greenCordinate, blueCordinate);
+  if(imageArr[pixelIndex+3]===255) {
+    console.log('Already painted');
+  }
   imageArr[pixelIndex] = red;
   imageArr[pixelIndex+1] = green;
   imageArr[pixelIndex+2] = blue;
   imageArr[pixelIndex+3] = 255;
+
 }
 
 /**

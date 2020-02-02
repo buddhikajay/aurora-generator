@@ -1,5 +1,5 @@
 import { getRGBbyCordinates, getPixelIndexByCordinates, getNextAvailableColor } from './drawImage';
-import { WIDTH, green } from './constants';
+import { WIDTH, blue, green } from './constants';
 
 
 test('Should return pixel index for cordinates x=100, y=100', () => {
@@ -34,12 +34,28 @@ test('Test NextAvailableColor: test Green increment', ()=>{
   expect(getNextAvailableColor(lowerBound, upperBound, currentCordinates)).toStrictEqual([15,15,0]);
 })
 
-test('Test NextAvailableColor: for Green', ()=> {
+test('Test NextAvailableColor: Color count for Blue', ()=> {
   let lastResult = null;
-  let {lowerBoundary, upperBoundary, currentCordinates} = green;
+  let {lowerBoundary, upperBoundary, currentCordinates} = blue;
+  let colorCount = 0;
   do {
     lastResult = getNextAvailableColor(lowerBoundary, upperBoundary, currentCordinates);
+    colorCount++;
   } while(lastResult);
 
-  expect(green.currentCordinates).toStrictEqual(green.upperBoundary);
+  expect(currentCordinates).toStrictEqual(upperBoundary);
+  expect(colorCount).toBe(16*16*16)
+})
+
+test('Test NextAvailableColor: Color count for Green', ()=> {
+  let lastResult = null;
+  let {lowerBoundary, upperBoundary, currentCordinates} = green;
+  let colorCount = 0;
+  do {
+    lastResult = getNextAvailableColor(lowerBoundary, upperBoundary, currentCordinates);
+    colorCount++;
+  } while(lastResult);
+
+  expect(currentCordinates).toStrictEqual(upperBoundary);
+  expect(colorCount).toBe(16*16*16)
 })
