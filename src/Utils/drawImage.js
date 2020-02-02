@@ -9,12 +9,72 @@ const HEIGHT = 128;
  * Respective color is calculated by multiplying cordinate by , CORDINATE*8 +7. Therefor single increment alogside an axis represents 8 step increase in each color.
  * Lowest possible color value 7. Max 255
  * 
+ * 
  * @param {*} x 
  * @param {*} y 
  * @param {*} z 
  */
  export const getRBGbyCordinates = (x, y, z) => {
   return [x*8+7, y*8+7, z*8+7]
+ }
+
+ /**
+  * 8 corners of 3d color pallet represents 8 colors. So, lets try to draw an image with 8 different colros.
+  * Pure color points for each colors are as follows
+  * 
+  * Black: 0,0,0
+  * Red: 31,0,0
+  * Green: 0,31,0
+  * Blue: 0,0,31
+  * Yellow: 31,31,0
+  * Magenta: 31,0,31
+  * Ceyan: 0,31,31
+  * White: 31,31,31
+  * 
+  * For ease of traversal, we can also define the boundaries for each color region
+  * Lets define the closest point to 0,0,0 and the farmost point to 0,0,0
+  * 
+  * Black: 0,0,0 : 15,15,15
+  * Red: 15,0,0 : 31,15,15
+  * Green: 0,15,0 : 15,31,15
+  * Blue: 0,0,15 : 15,15,31
+  * Yellow: 15,15,0 : 31,31,15
+  * Magneta: 15,0,15 : 31,15,31
+  * Ceyan: 0,15,15 : 15,31,31
+  * White: 15,15,15: 31,31,31 
+  * 
+  */
+
+  /**
+   * Given the upperbound and the currentindex, this function will return the next available color.
+   * This function assumes that the initial currentCordinatesArr is initialized to the lower bound
+   */
+ export const getNextAvailableColor = (loweboundArr, upperBoundArr, currentCordindatesArr) => {
+
+  if(currentCordindatesArr[2]>=upperBoundArr[2]){
+    currentCordindatesArr[2] = loweboundArr[2];
+    //We have reached the upper bound for Blue.
+    // Need to increment Green. Lets check wheather we have reached the upper bound of Green as well.
+    if(currentCordindatesArr[1]>=upperBoundArr[1]){
+      // Since we have reached the uppor bound of Green, we have to increment Red
+      currentCordindatesArr[1] =  loweboundArr[1];
+      if(currentCordindatesArr[0]>=upperBoundArr[0]){
+        //We have ran out of colors
+        return null;
+      } else{
+        //We can increment red
+        currentCordindatesArr[0]++;
+      }
+    } else {
+      currentCordindatesArr[1]++;
+    }
+
+  } else {
+    //Cool. We can increment Blue.
+    currentCordindatesArr[2]++; 
+  }
+
+  return currentCordindatesArr;
  }
 
 export const getImage = () => {
