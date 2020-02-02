@@ -1,5 +1,4 @@
-const WIDTH = 256;
-const HEIGHT = 128;
+import { HEIGHT, WIDTH, black, red, green, blue, yellow, magenta, cyan, white} from './constants';
 
 
 /**
@@ -14,12 +13,12 @@ const HEIGHT = 128;
  * @param {*} y 
  * @param {*} z 
  */
- export const getRBGbyCordinates = (x, y, z) => {
+ export const getRGBbyCordinates = (x, y, z) => {
   return [x*8+7, y*8+7, z*8+7]
  }
 
  /**
-  * 8 corners of 3d color pallet represents 8 colors. So, lets try to draw an image with 8 different colros.
+  * 8 corners of 3d color pallet represents 8 color buckets. So, lets try to draw an image with 8 different colros (color buckets).
   * Pure color points for each colors are as follows
   * 
   * Black: 0,0,0
@@ -31,17 +30,7 @@ const HEIGHT = 128;
   * Ceyan: 0,31,31
   * White: 31,31,31
   * 
-  * For ease of traversal, we can also define the boundaries for each color region
-  * Lets define the closest point to 0,0,0 and the farmost point to 0,0,0
-  * 
-  * Black: 0,0,0 : 15,15,15
-  * Red: 15,0,0 : 31,15,15
-  * Green: 0,15,0 : 15,31,15
-  * Blue: 0,0,15 : 15,15,31
-  * Yellow: 15,15,0 : 31,31,15
-  * Magneta: 15,0,15 : 31,15,31
-  * Ceyan: 0,15,15 : 15,31,31
-  * White: 15,15,15: 31,31,31 
+  * For ease of traversal, we can also define the boundaries for each color bucket. These are defined in the constants file
   * 
   */
 
@@ -52,12 +41,10 @@ const HEIGHT = 128;
  export const getNextAvailableColor = (loweboundArr, upperBoundArr, currentCordindatesArr) => {
 
   if(currentCordindatesArr[2]>=upperBoundArr[2]){
-    currentCordindatesArr[2] = loweboundArr[2];
     //We have reached the upper bound for Blue.
     // Need to increment Green. Lets check wheather we have reached the upper bound of Green as well.
     if(currentCordindatesArr[1]>=upperBoundArr[1]){
       // Since we have reached the uppor bound of Green, we have to increment Red
-      currentCordindatesArr[1] =  loweboundArr[1];
       if(currentCordindatesArr[0]>=upperBoundArr[0]){
         //We have ran out of colors
         return null;
@@ -65,9 +52,11 @@ const HEIGHT = 128;
         //We can increment red
         currentCordindatesArr[0]++;
       }
+      currentCordindatesArr[1] =  loweboundArr[1];
     } else {
       currentCordindatesArr[1]++;
     }
+    currentCordindatesArr[2] = loweboundArr[2];
 
   } else {
     //Cool. We can increment Blue.
@@ -79,57 +68,8 @@ const HEIGHT = 128;
 
 export const getImage = () => {
   let imageArr = new Uint8ClampedArray(WIDTH*HEIGHT*4);
-  let redVal = 0;
-  let blueVal = 0;
-  let greenVal = 0;
-
-  for(let y=0; y<HEIGHT; y++) {
-    for(let x =0; x<WIDTH; x++){
-
-      const pixelIndex = getPixelIndexByCordinates(x, y, WIDTH);
-      greenVal++;
-      if(greenVal>=32){
-        greenVal=0;
-        blueVal++;
-      }
-      if(blueVal>=32){
-        blueVal=0;
-        redVal++;
-      }
-
-      // imageArr[pixelIndex] = 255;
-      // imageArr[pixelIndex+1] = 255;
-      // imageArr[pixelIndex+2] = 255;
-      // imageArr[pixelIndex+3] = 255;
-
-
-      imageArr[x*4+y*WIDTH*4] = redVal*8;
-      imageArr[x*4+1+y*WIDTH*4] = greenVal*8;
-      imageArr[x*4+2+y*WIDTH*4] = blueVal*8;
-      imageArr[x*4+3+y*WIDTH*4] = 255;
-      
-    }
-  }
-
-  drawMountains(imageArr);
-  drawLake(imageArr);
-  console.log(`valule: ${redVal}, ${blueVal}, ${greenVal}`)
-  console.log(`Sample alpha: ${imageArr[3]}`)
+  artist(imageArr);
   return new ImageData(imageArr, WIDTH, HEIGHT);
-}
-
-const drawMountains = (imageArr) => {
-  for(let x =0; x< WIDTH; x++) {
-    let y = Math.round( Math.abs( 20*Math.sin(x/10)+70 ) );
-    if(y<HEIGHT) {
-      console.log(`x: ${x}, y: ${y}`);
-      const index = getPixelIndexByCordinates(x, y, WIDTH);
-      imageArr[index] = 255;
-      imageArr[index+1] = 0;
-      imageArr[index+2] = 0;
-    }
-
-  }
 }
 
 const drawLake = (imageArr) => {
@@ -147,6 +87,85 @@ const drawLake = (imageArr) => {
 }
 
 /**
+ * We are going to draw the sky, mountains and forest with trees.. ha ha
+ * We will be scanning the image from top to bottom, then left to right
+ * In each iteration we will have two boundaries, mountain boundary and forestBoundary
+ * 
+ * Sky will be drawn with colors Yellow, white, red and magenta
+ * Mountain : Blue, Back
+ * Forest: Green, Cyan
+ * 
+ * If we run out of colors, we'll be using available colors
+ * 
+ */
+const artist = (imageArr) => {
+  let skyColors = [white,yellow, cyan, green]
+
+  for(let x=0; x<WIDTH; x++) {
+    const mountainBoundary = Math.round( Math.abs( 20*Math.sin(x/35)+50 ) );
+    drawAlongYAxisFromTopToBottom(x, 0, mountainBoundary, skyColors, imageArr);
+  }
+
+  for(let x=0; x<WIDTH; x++) {
+
+    skyColors.push(red, blue, magenta, black)
+    const mountainBoundary = Math.round( Math.abs( 20*Math.sin(x/35)+50 ) );
+    drawAlongYAxisFromTopToBottom(x, mountainBoundary, HEIGHT, skyColors, imageArr);
+  }
+  console.log(`Available colors : red: ${red.currentCordinates}, green: ${green.currentCordinates}`)
+  return new ImageData(imageArr, WIDTH, HEIGHT);
+}
+
+
+const drawAlongYAxisFromTopToBottom = (x, yMin, yMax, colorBucketArray, imageArr) => {
+
+  for(let y=yMin; y<yMax; y++) {
+
+    if(colorBucketArray.length===0) {
+      break;
+    }
+    //To make the color distribution even, we selet a randomr color from multiple color buckets
+    let random = getRandomInt(colorBucketArray.length);
+    // console.log(`random : ${random}, colorBucketArrayLength: ${colorBucketArray.length}`)
+    let {lowerBoundary, upperBoundary, currentCordinates} = colorBucketArray[random];
+    let colorCordinates = getNextAvailableColor(lowerBoundary, upperBoundary, currentCordinates);
+    
+    // if the color bucket is empty, remote it from the bucket array.
+    while(colorCordinates==null) {
+      colorBucketArray.splice(random, 1);
+      if(colorBucketArray.length === 0) {
+        break;
+      }
+      random = getRandomInt(colorBucketArray.length);
+      try {
+        let {lowerBoundary, upperBoundary, currentCordinates} = colorBucketArray[random];
+        colorCordinates = getNextAvailableColor(lowerBoundary, upperBoundary, currentCordinates);
+      } catch (error) {
+        console.log(error);
+        // console.log(`random : ${random}, colorBucketArrayLength: ${colorBucketArray.length}`)
+      }
+    }
+
+    if(colorCordinates) {
+      try {
+        paitPixelByColorCordinates(x, y, ...colorCordinates, imageArr);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }
+}
+
+const paitPixelByColorCordinates = (x,y,redCordinate,greenCordinate,blueCordinate,imageArr) => {
+  const pixelIndex = getPixelIndexByCordinates(x,y,WIDTH);
+  const [red, green, blue] = getRGBbyCordinates(redCordinate, greenCordinate, blueCordinate);
+  imageArr[pixelIndex] = red;
+  imageArr[pixelIndex+1] = green;
+  imageArr[pixelIndex+2] = blue;
+  imageArr[pixelIndex+3] = 255;
+}
+
+/**
  * Returns the index of the red colour of a pixel.
  * More info: https://developer.mozilla.org/en-US/docs/Web/API/ImageData 
  * @param {*} x cordinate 
@@ -157,6 +176,7 @@ export const getPixelIndexByCordinates = (x, y, width) => {
   return x*4+y*width*4;
 }
 
-export const paintRecursively = (lastX, lastY, lastRedValue, lastBlueValue, lastGreenValue, isWithingBoundary) => {
-
+const getRandomInt = (max) => {
+  return Math.floor(Math.random() * Math.floor(max));
 }
+
