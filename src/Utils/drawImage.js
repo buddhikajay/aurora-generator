@@ -92,27 +92,26 @@ const artist = (imageArr) => {
   let mountainColorBuckets = [red , blue, magenta, black];
   let forestColorBuckets = [...skyColorBuckets, ...mountainColorBuckets]; //we are using remaining colors to draw the forest
 
+  const getMountainBoundary = x => Math.round(Math.abs( 20*Math.sin(x/35)+50 ));
+  const getForestBoundary = x => Math.round(Math.abs(20*Math.abs(Math.sin(x/5 + 20))+100));
+
   // Draw aurora
   for(let x=0; x<WIDTH; x++) {
-    const mountainBoundary = Math.round( Math.abs( 20*Math.sin(x/35)+50 ) );
-    drawAlongYAxisFromTopToBottom(x, 0, mountainBoundary, skyColorBuckets, imageArr);
+    drawAlongYAxisFromTopToBottom(x, 0, getMountainBoundary(x), skyColorBuckets, imageArr);
   }
 
   console.log(`ColorBucketArrayLenght ${skyColorBuckets.length}`);
 
   // Draw mountains
   for(let x=0; x<WIDTH; x++) {
-    const mountainBoundary = Math.round( Math.abs( 20*Math.sin(x/35)+50 ) );
-    const forestBoundary =  Math.round( Math.abs( 20*Math.abs(Math.sin(x/5 + 20))+100 ) )
-    drawAlongYAxisFromTopToBottom(x, mountainBoundary, forestBoundary, mountainColorBuckets, imageArr);
+    drawAlongYAxisFromTopToBottom(x, getMountainBoundary(x), getForestBoundary(x), mountainColorBuckets, imageArr);
   }
 
   console.log(`ColorBucketArrayLenght ${mountainColorBuckets.length}`);
 
   // Draw forest
   for(let x=0; x<WIDTH; x++) {
-    const forestBoundary =  Math.round( Math.abs( 20*Math.abs(Math.sin(x/5 + 20))+100 ) )
-    drawAlongYAxisFromTopToBottom(x, forestBoundary, HEIGHT, forestColorBuckets, imageArr);
+    drawAlongYAxisFromTopToBottom(x, getForestBoundary(x), HEIGHT, forestColorBuckets, imageArr);
   }
 
   console.log(`ColorBucketArrayLenght ${forestColorBuckets.length}`);
