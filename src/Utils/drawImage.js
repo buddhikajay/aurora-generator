@@ -78,7 +78,7 @@ const drawLake = (imageArr) => {
   for(let x =0; x< WIDTH; x++) {
     let y = Math.round( Math.abs( 20*Math.abs(Math.sin(x/5 + 20))+100 ) );
     if(y<HEIGHT) {
-      console.log(`x: ${x}, y: ${y}`);
+      // console.log(`x: ${x}, y: ${y}`);
       const index = getPixelIndexByCordinates(x, y, WIDTH);
       imageArr[index] = 255;
       imageArr[index+1] = 0;
@@ -101,23 +101,23 @@ const artist = (imageArr) => {
     drawAlongYAxisFromTopToBottom(x, 0, getMountainBoundary(x), skyColorBuckets, imageArr);
   }
 
-  console.log(`ColorBucketArrayLenght ${skyColorBuckets.length}`);
+  // console.log(`ColorBucketArrayLenght ${skyColorBuckets.length}`);
 
   // Draw mountains
   for(let x=0; x<WIDTH; x++) {
     drawAlongYAxisFromTopToBottom(x, getMountainBoundary(x), getForestBoundary(x), mountainColorBuckets, imageArr);
   }
 
-  console.log(`ColorBucketArrayLenght ${mountainColorBuckets.length}`);
+  // console.log(`ColorBucketArrayLenght ${mountainColorBuckets.length}`);
 
   // Draw forest
   for(let x=0; x<WIDTH; x++) {
     drawAlongYAxisFromTopToBottom(x, getForestBoundary(x), HEIGHT, forestColorBuckets, imageArr);
   }
 
-  console.log(`ColorBucketArrayLenght ${forestColorBuckets.length}`);
-  console.log(`Available colors : black: ${black.currentCordinates}, red: ${red.currentCordinates}, green: ${green.currentCordinates}, blue: ${blue.currentCordinates}, yellow: ${yellow.currentCordinates}, magenta: ${magenta.currentCordinates}, cyan: ${cyan.currentCordinates}, white: ${white.currentCordinates}`);
-  console.log(`Painted pixel count : ${paintedPixelCount}`);
+  // console.log(`ColorBucketArrayLenght ${forestColorBuckets.length}`);
+  // console.log(`Available colors : black: ${black.currentCordinates}, red: ${red.currentCordinates}, green: ${green.currentCordinates}, blue: ${blue.currentCordinates}, yellow: ${yellow.currentCordinates}, magenta: ${magenta.currentCordinates}, cyan: ${cyan.currentCordinates}, white: ${white.currentCordinates}`);
+  // console.log(`Painted pixel count : ${paintedPixelCount}`);
   return new ImageData(imageArr, WIDTH, HEIGHT);
 }
 
