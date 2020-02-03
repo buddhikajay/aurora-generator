@@ -37,6 +37,7 @@ let paintedPixelCount=0;
  /**
   * 
   * Given the upperbound and the currentindex, this function will return the next available color.
+  * I made the decition to not use recurtion to avoid mataining a desition table for each color
   */
  export const getNextAvailableColor = (loweboundArr, upperBoundArr, currentCordindatesArr) => {
 
@@ -88,12 +89,12 @@ const drawLake = (imageArr) => {
 }
 
 const artist = (imageArr) => {
-  let skyColorBuckets = [white, yellow, green,cyan];
+  let skyColorBuckets = [white, yellow, green, cyan];
   let mountainColorBuckets = [red , blue, magenta, black];
   let forestColorBuckets = [...skyColorBuckets, ...mountainColorBuckets]; //we are using remaining colors to draw the forest
 
   const getMountainBoundary = x => Math.round(Math.abs( 20*Math.sin(x/35)+50 ));
-  const getForestBoundary = x => Math.round(Math.abs(20*Math.abs(Math.sin(x/5 + 20))+100));
+  const getForestBoundary = x => Math.round(Math.abs(20*Math.abs(Math.sin(x/5 + 20))+102));
 
   // Draw aurora
   for(let x=0; x<WIDTH; x++) {
@@ -131,7 +132,7 @@ const drawAlongYAxisFromTopToBottom = (x, yMin, yMax, colorBucketArray, imageArr
     if(colorBucketArray.length===0) {
       break;
     }
-    //To make the color distribution even, we selet a randomr color from multiple color buckets
+    //Mix up the colors to make the color distribution even, we selet a randomr color from multiple color buckets
     let random = getRandomInt(colorBucketArray.length);
     // console.log(`random : ${random}, colorBucketArrayLength: ${colorBucketArray.length}`)
     let {lowerBoundary, upperBoundary, currentCordinates} = colorBucketArray[random];
