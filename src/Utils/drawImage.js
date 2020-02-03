@@ -47,6 +47,7 @@ let paintedPixelCount=0;
       // Since we have reached the uppor bound of Green, we have to increment Red
       if(currentCordindatesArr[0]>=upperBoundArr[0]){
         //We have ran out of colors
+        // console.log(console.log('Empty'));
         return null;
       } else{
         //We can increment red
@@ -87,13 +88,13 @@ const drawLake = (imageArr) => {
 }
 
 const artist = (imageArr) => {
-  let skyColorBuckets = [white, yellow, green,red];
-  let mountainColorBuckets = [cyan, blue, magenta, black];
+  let skyColorBuckets = [white, yellow, green,cyan];
+  let mountainColorBuckets = [red , blue, magenta, black];
   let forestColorBuckets = [...skyColorBuckets, ...mountainColorBuckets]; //we are using remaining colors to draw the forest
 
   // Draw aurora
   for(let x=0; x<WIDTH; x++) {
-    const mountainBoundary = 64;
+    const mountainBoundary = Math.round( Math.abs( 20*Math.sin(x/35)+50 ) );
     drawAlongYAxisFromTopToBottom(x, 0, mountainBoundary, skyColorBuckets, imageArr);
   }
 
@@ -101,18 +102,18 @@ const artist = (imageArr) => {
 
   // Draw mountains
   for(let x=0; x<WIDTH; x++) {
-    const mountainBoundary = 64;
-    const forestBoundary =  128;
+    const mountainBoundary = Math.round( Math.abs( 20*Math.sin(x/35)+50 ) );
+    const forestBoundary =  Math.round( Math.abs( 20*Math.abs(Math.sin(x/5 + 20))+100 ) )
     drawAlongYAxisFromTopToBottom(x, mountainBoundary, forestBoundary, mountainColorBuckets, imageArr);
   }
 
   console.log(`ColorBucketArrayLenght ${mountainColorBuckets.length}`);
 
   // Draw forest
-  // for(let x=0; x<WIDTH; x++) {
-  //   const forestBoundary =  Math.round( Math.abs( 20*Math.abs(Math.sin(x/5 + 20))+100 ) )
-  //   drawAlongYAxisFromTopToBottom(x, forestBoundary, HEIGHT, forestColorBuckets, imageArr);
-  // }
+  for(let x=0; x<WIDTH; x++) {
+    const forestBoundary =  Math.round( Math.abs( 20*Math.abs(Math.sin(x/5 + 20))+100 ) )
+    drawAlongYAxisFromTopToBottom(x, forestBoundary, HEIGHT, forestColorBuckets, imageArr);
+  }
 
   console.log(`ColorBucketArrayLenght ${forestColorBuckets.length}`);
   console.log(`Available colors : black: ${black.currentCordinates}, red: ${red.currentCordinates}, green: ${green.currentCordinates}, blue: ${blue.currentCordinates}, yellow: ${yellow.currentCordinates}, magenta: ${magenta.currentCordinates}, cyan: ${cyan.currentCordinates}, white: ${white.currentCordinates}`);
@@ -125,6 +126,9 @@ const drawAlongYAxisFromTopToBottom = (x, yMin, yMax, colorBucketArray, imageArr
 
   for(let y=yMin; y<yMax; y++) {
 
+    // if((x===255 || x===254 || x===253) && (y>100)) {
+    //   console.log(`x:${x}, y:${y}`);
+    // }
     if(colorBucketArray.length===0) {
       break;
     }
@@ -161,7 +165,7 @@ const drawAlongYAxisFromTopToBottom = (x, yMin, yMax, colorBucketArray, imageArr
   }
 }
 
-const paitPixelByColorCordinates = (x,y,redCordinate,greenCordinate,blueCordinate,imageArr) => {
+const paitPixelByColorCordinates = (x, y, redCordinate, greenCordinate, blueCordinate, imageArr) => {
   const pixelIndex = getPixelIndexByCordinates(x,y,WIDTH);
   const [red, green, blue] = getRGBbyCordinates(redCordinate, greenCordinate, blueCordinate);
   if(imageArr[pixelIndex+3]===255) {

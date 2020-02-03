@@ -1,5 +1,5 @@
 import { getRGBbyCordinates, getPixelIndexByCordinates, getNextAvailableColor } from './drawImage';
-import { WIDTH, blue, green, cyan, red, black } from './constants';
+import { WIDTH, black, red, green, blue, yellow, magenta, cyan, white } from './constants';
 
 
 test('Should return pixel index for cordinates x=100, y=100', () => {
@@ -36,7 +36,7 @@ test('Test NextAvailableColor: test Green increment', ()=>{
 
 
 describe('Test color count for each color', ()=> {
-  for(let color of [black, red, green, blue]) {
+  for(let color of [black, red, green, blue, yellow, magenta, cyan, white]) {
     test(`Test for color: ${color.name}`, ()=>{
       let lastResult = null;
       let {lowerBoundary, upperBoundary, currentCordinates} = color;
