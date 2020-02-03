@@ -7,6 +7,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <Canvas/>
+        <p>Aurora above the mountains</p>
       </header>
     </div>
   );

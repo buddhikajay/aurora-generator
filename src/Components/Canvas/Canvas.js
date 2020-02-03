@@ -7,6 +7,8 @@ const Canvas = () => {
 
   useEffect(()=>{
     const canvas = canvasElement.current;
+    canvas.width=256;
+    canvas.height=128;
     const ctx = canvas.getContext('2d');
     ctx.fillStyle = 'green';
     ctx.putImageData(getImage(), 0, 0);
