@@ -22,8 +22,6 @@
  */
 
 import { HEIGHT, WIDTH, black, red, green, blue, yellow, magenta, cyan, white} from './constants';
-
-let paintedPixelCount=0;
 /**
  *
  * @param {*} x 
@@ -70,22 +68,7 @@ let paintedPixelCount=0;
 
 export const getImage = () => {
   let imageArr = new Uint8ClampedArray(WIDTH*HEIGHT*4);
-  artist(imageArr);
-  return new ImageData(imageArr, WIDTH, HEIGHT);
-}
-
-const drawLake = (imageArr) => {
-  for(let x =0; x< WIDTH; x++) {
-    let y = Math.round( Math.abs( 20*Math.abs(Math.sin(x/5 + 20))+100 ) );
-    if(y<HEIGHT) {
-      // console.log(`x: ${x}, y: ${y}`);
-      const index = getPixelIndexByCordinates(x, y, WIDTH);
-      imageArr[index] = 255;
-      imageArr[index+1] = 0;
-      imageArr[index+2] = 0;
-    }
-
-  }
+  return artist(imageArr);
 }
 
 const artist = (imageArr) => {
@@ -121,14 +104,18 @@ const artist = (imageArr) => {
   return new ImageData(imageArr, WIDTH, HEIGHT);
 }
 
-
+/**
+ * This function paints pixels along the  Y axis for given X, top to bottom. 
+ * @param {*} x 
+ * @param {*} yMin 
+ * @param {*} yMax 
+ * @param {*} colorBucketArray 
+ * @param {*} imageArr 
+ */
 const drawAlongYAxisFromTopToBottom = (x, yMin, yMax, colorBucketArray, imageArr) => {
 
   for(let y=yMin; y<yMax; y++) {
 
-    // if((x===255 || x===254 || x===253) && (y>100)) {
-    //   console.log(`x:${x}, y:${y}`);
-    // }
     if(colorBucketArray.length===0) {
       break;
     }
@@ -140,7 +127,6 @@ const drawAlongYAxisFromTopToBottom = (x, yMin, yMax, colorBucketArray, imageArr
     
     // if the color bucket is empty, remove it from the bucket array.
     while(colorCordinates==null) {
-      paintedPixelCount++;
       colorBucketArray.splice(random, 1);
       if(colorBucketArray.length === 0) {
         break;
