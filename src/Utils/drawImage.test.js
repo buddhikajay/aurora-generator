@@ -47,7 +47,7 @@ describe('Test color count for each color', ()=> {
       } while(lastResult);
     
       expect(currentCordinates).toStrictEqual(upperBoundary);
-      expect(colorCount).toBe(4096);
+      expect(colorCount).toBe(4097); //colors pluse null
     })
   }
 });
